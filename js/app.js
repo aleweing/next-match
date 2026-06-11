@@ -48,6 +48,12 @@ class NextMatchApp {
         document.getElementById("jumpButton").addEventListener("click", () => this.jumpToDate());
         document.getElementById("todayButton").addEventListener("click", () => this.goToNextMatch());
 
+        // Reset button (volver al inicio)
+        const resetButton = document.getElementById("resetButton");
+        if (resetButton) {
+            resetButton.addEventListener("click", () => this.goToNextMatch());
+        }
+
         // Swipe
         const matchContainer = document.getElementById("matchContainer");
         matchContainer.addEventListener("touchstart", (e) => this.handleTouchStart(e));
@@ -56,8 +62,8 @@ class NextMatchApp {
 
         // Keyboard
         document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowRight") this.nextMatch();
-            if (e.key === "ArrowLeft") this.prevMatch();
+            if (e.key === "ArrowRight") this.prevMatch();
+            if (e.key === "ArrowLeft") this.nextMatch();
         });
     }
 
@@ -178,6 +184,7 @@ class NextMatchApp {
     nextMatch() {
         if (this.currentMatchIndex < this.filteredMatches.length - 1) {
             this.currentMatchIndex++;
+            this.addSwipeAnimation("left");
             this.updateDisplay();
         } else {
             this.bounceCard();
@@ -187,10 +194,19 @@ class NextMatchApp {
     prevMatch() {
         if (this.currentMatchIndex > 0) {
             this.currentMatchIndex--;
+            this.addSwipeAnimation("right");
             this.updateDisplay();
         } else {
             this.bounceCard();
         }
+    }
+
+    addSwipeAnimation(direction) {
+        const card = document.getElementById("matchCard");
+        card.classList.remove("slide-left", "slide-right");
+        // Trigger reflow
+        void card.offsetWidth;
+        card.classList.add(direction === "left" ? "slide-left" : "slide-right");
     }
 
     bounceCard() {
@@ -241,12 +257,9 @@ class NextMatchApp {
 
     convertToLocalTime(dateStr, timeStr) {
         // Crear fecha en UTC
-        const [year, month, day] = dateStr.split("-");
-        const [hours, minutes] = timeStr.split(":");
-        
         const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
         
-        // Obtener hora local
+        // Obtener hora local del dispositivo
         const localHours = String(utcDate.getHours()).padStart(2, "0");
         const localMinutes = String(utcDate.getMinutes()).padStart(2, "0");
         
