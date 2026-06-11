@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Next Match ⚽</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="title">⚽ Next Match ⚽</h1>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
+    </header>
+
+    <!-- Menu Hamburguesa -->
+    <nav class="menu" id="menu">
+        <div class="menu-close" id="menuClose">✕</div>
+        
+        <div class="menu-section">
+            <h3>Tema</h3>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-label">Tema oscuro</span>
+            </button>
+        </div>
+
+        <div class="menu-section">
+            <h3>Filtrar por equipo</h3>
+            <input 
+                type="text" 
+                id="teamFilter" 
+                class="team-filter" 
+                placeholder="Escribe un equipo..."
+                autocomplete="off"
+            >
+            <button class="clear-filter" id="clearFilter">Limpiar filtro</button>
+        </div>
+
+        <div class="menu-section">
+            <h3>Ir a una fecha</h3>
+            <input 
+                type="date" 
+                id="dateJump" 
+                class="date-jump"
+            >
+            <button class="jump-button" id="jumpButton">Ir a esa fecha</button>
+            <button class="today-button" id="todayButton">Próximo partido</button>
+        </div>
+    </nav>
+
+    <!-- Overlay del menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Contenedor del partido -->
+        <div class="match-container" id="matchContainer">
+            <div class="match-card" id="matchCard">
+                <!-- Se llena con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Indicador de posición -->
+        <div class="position-indicator" id="positionIndicator">
+            <span id="currentPosition">1</span> / <span id="totalMatches">104</span>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
