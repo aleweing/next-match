@@ -109,14 +109,12 @@ const MATCHES = [
   { date: "2026-07-06", time: "22:00", team1: "Ganador Partido 81", team2: "Ganador Partido 82", flag1: "🏆", flag2: "🏆" },
   { date: "2026-07-07", time: "19:00", team1: "Ganador Partido 86", team2: "Ganador Partido 88", flag1: "🏆", flag2: "🏆" },
   { date: "2026-07-07", time: "22:00", team1: "Ganador Partido 85", team2: "Ganador Partido 87", flag1: "🏆", flag2: "🏆" },
-  { date: "2026-07-09", time: "19:00", team1: "Ganador Partido 89", team2: "Ganador Partido 90", flag1: "🏆", flag2: "🏆" },
-  { date: "2026-07-10", time: "19:00", team1: "Ganador Partido 93", team2: "Ganador Partido 94", flag1: "🏆", flag2: "🏆" },
     
     // CUARTOS DE FINAL
+  { date: "2026-07-09", time: "19:00", team1: "Ganador Partido 89", team2: "Ganador Partido 90", flag1: "🏆", flag2: "🏆" },
+  { date: "2026-07-10", time: "19:00", team1: "Ganador Partido 93", team2: "Ganador Partido 94", flag1: "🏆", flag2: "🏆" },
   { date: "2026-07-11", time: "19:00", team1: "Ganador Partido 91", team2: "Ganador Partido 92", flag1: "🏆", flag2: "🏆" },
   { date: "2026-07-11", time: "22:00", team1: "Ganador Partido 95", team2: "Ganador Partido 96", flag1: "🏆", flag2: "🏆" },
-  { date: "2026-07-14", time: "19:00", team1: "Ganador Partido 97", team2: "Ganador Partido 98", flag1: "🏆", flag2: "🏆" },
-  { date: "2026-07-15", time: "19:00", team1: "Ganador Partido 99", team2: "Ganador Partido 100", flag1: "🏆", flag2: "🏆" },
     
     // SEMIFINALES
   { date: "2026-07-14", time: "19:00", team1: "Ganador Partido 97", team2: "Ganador Partido 98", flag1: "🏆", flag2: "🏆" },
