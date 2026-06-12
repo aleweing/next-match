@@ -240,42 +240,42 @@ class NextMatchApp {
     }
     
     updateDisplay() {
-        const match = this.filteredMatches[this.currentMatchIndex];
-        if (!match) return;
+    const match = this.filteredMatches[this.currentMatchIndex];
+    if (!match) return;
 
-        const card = document.getElementById("matchCard");
+    const card = document.getElementById("matchCard");
+    const localTime = this.convertToLocalTime(match.date, match.time);
+    const countdown = this.getCountdown(match.date, match.time);
+
+    card.innerHTML = `
+        <div class="tournament-badge">Copa Mundial 2026</div>
         
-        // Convertir hora UTC a hora local del dispositivo
-        const localTime = this.convertToLocalTime(match.date, match.time);
-
-        const countdown = this.getCountdown(match.date, match.time);
-
-        card.innerHTML = `
-            <div class="tournament-badge">Copa Mundial 2026</div>
-            
+        <div class="teams-row">
             <div class="team-section">
                 <span class="flag">${match.flag1}</span>
                 <h2 class="team-name">${match.team1}</h2>
             </div>
 
-            <div class="vs-container">
-                <span class="vs-text">vs</span>
+            <div class="match-center">
+                <div class="vs-container">
+                    <span class="vs-text">vs</span>
+                </div>
+                <div class="match-date">${this.formatDate(match.date)}</div>
+                <div class="match-time">${localTime}</div>
+                <div class="countdown">
+                    <span class="countdown-value">${countdown}</span>
+                </div>
             </div>
 
             <div class="team-section">
                 <span class="flag">${match.flag2}</span>
                 <h2 class="team-name">${match.team2}</h2>
             </div>
+        </div>
+    `;
 
-            <div class="match-date">${this.formatDate(match.date)}</div>
-            <div class="match-time">${localTime}</div>
-            <div class="countdown">
-                <span class="countdown-value">${countdown}</span>
-            </div>
-        `;
-
-        this.updatePositionIndicator();
-    }
+    this.updatePositionIndicator();
+}
 
     convertToLocalTime(dateStr, timeStr) {
         // Crear fecha en UTC
