@@ -8,13 +8,14 @@ class NextMatchApp {
         this.touchStartY = 0;
         this.isDarkTheme = this.loadTheme();
         this.filterTeam = "";
-        
+        this.apiMatches = []; // Nuevo para usar API
         this.init();
     }
-
+// Nuevo Init para usar API
     init() {
         this.setupEventListeners();
         this.applyTheme();
+        this.loadApiResults();
         this.updateDisplay();
         this.updateTotalMatches();
     }
@@ -219,6 +220,25 @@ class NextMatchApp {
         card.classList.add("bounce");
     }
 
+    async loadApiResults() {
+        try {
+            const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
+            const data = await response.json();
+            this.apiMatches = data.matches || [];
+            this.updateDisplay();
+        } catch (err) {
+            console.warn("No se pudieron cargar resultados:", err);
+        }
+    }
+
+    getApiMatch(match) {
+        return this.apiMatches.find(m => {
+            const apiDate = m.utcDate.slice(0, 10);
+            const apiTime = m.utcDate.slice(11, 16);
+            return apiDate === match.date && apiTime === match.time;
+        });
+    }
+    
     updateDisplay() {
         const match = this.filteredMatches[this.currentMatchIndex];
         if (!match) return;
@@ -274,15 +294,28 @@ class NextMatchApp {
         return date.toLocaleDateString("es-ES", options);
     }
 
-    getCountdown(dateStr, timeStr) {
-        const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
-        const now = new Date();
-        const diff = matchDateTime - now;
+getCountdown(dateStr, timeStr) {
+    const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
+    const now = new Date();
+    const diff = matchDateTime - now;
 
-//        if (diff <= 0) {
-//            return "Partido finalizado";
-//        }
-// DESPUÉS
+    // Buscar resultado en la API
+    const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
+
+    if (apiMatch) {
+        if (apiMatch.status === "FINISHED") {
+            const home = apiMatch.score.fullTime.home;
+            const away = apiMatch.score.fullTime.away;
+            return `Finalizado · ${home} - ${away}`;
+        }
+        if (apiMatch.status === "IN_PLAY" || apiMatch.status === "PAUSED") {
+            const home = apiMatch.score.fullTime.home ?? 0;
+            const away = apiMatch.score.fullTime.away ?? 0;
+            return `⚽ En juego · ${home} - ${away}`;
+        }
+    }
+
+    // Fallback por tiempo si no hay dato de API
     if (diff <= 0) {
         const elapsed = Math.abs(diff);
         const twoHalfHours = 2.5 * 60 * 60 * 1000;
@@ -292,6 +325,19 @@ class NextMatchApp {
             return "Partido finalizado";
         }
     }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (days > 0) {
+        return `En ${days}d ${hours}h`;
+    } else if (hours > 0) {
+        return `En ${hours}h ${minutes}m`;
+    } else {
+        return `En ${minutes}m`;
+    }
+}
         
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
