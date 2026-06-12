@@ -470,9 +470,7 @@ body {
 /* =====================
    LANDSCAPE MÓVIL
    ===================== */
-
 @media (orientation: landscape) and (max-height: 500px) {
-    /* Reducir header */
     .header {
         padding: 0.2rem 0.6rem;
     }
@@ -481,14 +479,13 @@ body {
         font-size: 0.9rem;
     }
 
-    /* Forzar que body y main ocupen toda la altura */
     html, body {
         height: 100dvh;
         overflow: hidden;
     }
 
     .main {
-        height: calc(100dvh - 2.2rem); /* altura pantalla menos header */
+        height: calc(100dvh - 2.2rem);
         overflow: hidden;
         padding: 0.2rem 0.5rem;
         justify-content: space-between;
@@ -508,13 +505,15 @@ body {
         justify-content: center;
     }
 
-    /* Aumentar tamaños — estaban demasiado pequeños */
-    .team-name { font-size: clamp(0.9rem, 3dvh, 1.3rem); }
-    .flag-emoji { font-size: clamp(2rem, 6dvh, 3.5rem); }
-    .flag-svg { width: clamp(2.5rem, 7dvh, 4rem); }
-    .match-date { font-size: clamp(0.7rem, 2dvh, 1rem); }
-    .match-time { font-size: clamp(1.2rem, 4dvh, 2rem); margin: 0.2rem 0; }
-    .countdown-value { font-size: clamp(0.9rem, 2.5dvh, 1.2rem); }
+    .tournament-badge { display: none; }
+
+    .team-name { font-size: 1.3rem; }
+    .flag-emoji { font-size: 2.5rem; }
+    .flag-svg { width: 3.5rem; }
+    .match-date { font-size: 0.85rem; }
+    .match-time { font-size: 1.8rem; margin: 0.2rem 0; }
+    .countdown-value { font-size: 1rem; }
+    .match-info { margin-top: 0.3rem; }
 
     .reset-button {
         font-size: 0.85rem;
