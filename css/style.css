@@ -260,7 +260,7 @@ body {
 .match-card {
     background-color: var(--bg-primary);
     border-radius: 12px;
-    padding: 1.2rem 1rem;
+    padding: clamp(0.5rem, 2dvh, 1.2rem) 1rem;
     box-shadow: var(--card-shadow);
     text-align: center;
     transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -312,20 +312,20 @@ body {
 }
 
 .team-name {
-    font-size: 2rem;
+    font-size: clamp(1rem, 3.5dvh, 2rem);
     font-weight: 700;
-    margin-bottom: 0.2rem;
+    margin-bottom: clamp(0.1rem, 0.5dvh, 0.2rem);
     color: var(--text-primary);
 }
 
 .flag {
-    font-size: 4rem;
-    margin: 0.2rem 0;
+    font-size: clamp(2rem, 7dvh, 4rem);
+    margin: clamp(0.1rem, 0.5dvh, 0.2rem) 0;
     display: inline-block;
 }
 
 .vs-container {
-    margin: 0.8rem 0;
+    margin: clamp(0.3rem, 1dvh, 0.8rem) 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -333,7 +333,7 @@ body {
 }
 
 .vs-text {
-    font-size: 1.5rem;
+    font-size: clamp(0.75rem, 2dvh, 1.5rem);
     font-weight: 500;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -341,20 +341,20 @@ body {
 }
 
 .team-section {
-    margin: 0.5rem 0;
+    margin: clamp(0.2rem, 0.8dvh, 0.5rem) 0;
 }
 
 .match-time {
-    font-size: 2.2rem;
     font-weight: 700;
     color: var(--accent-color);
-    margin: 0.8rem 0;
+    font-size: clamp(1.4rem, 4dvh, 2.2rem);
+    margin: clamp(0.3rem, 1dvh, 0.8rem) 0;
 }
 
 .match-date {
-    font-size: 1.5rem;
     color: var(--text-secondary);
-    margin-bottom: 0.4rem;
+    font-size: clamp(0.7rem, 2dvh, 1.5rem);
+    margin-bottom: clamp(0.2rem, 0.5dvh, 0.4rem);
 }
 
 .countdown {
@@ -365,7 +365,7 @@ body {
 }
 
 .countdown-value {
-    font-size: 1.2rem;
+    font-size: clamp(0.9rem, 2.5dvh, 1.2rem);
     color: var(--accent-color);
     font-weight: 700;
 }
@@ -376,10 +376,10 @@ body {
     color: white;
     padding: 0.25rem 0.5rem;
     border-radius: 20px;
-    font-size: 1.5rem;
+    font-size: clamp(0.5rem, 1.5dvh, 1.5rem);
     font-weight: 600;
     text-transform: uppercase;
-    margin-bottom: 0.8rem;
+    margin-bottom: clamp(0.3rem, 1dvh, 0.8rem);
     letter-spacing: 0.5px;
 }
 
@@ -506,25 +506,9 @@ body {
 
 /* Mobile */
 @media (max-width: 480px) {
-    .title {
-        font-size: 1rem;
-    }
-
-    .match-card {
-        padding: 1rem 0.8rem;
-    }
-
-    .team-name {
-        font-size: 2rem;
-    }
-
-    .flag {
-        font-size: 4rem;
-    }
-
-    .match-time {
-        font-size: 1.8rem;
-    }
+    .title { font-size: 1rem; }
+    .match-card { padding: clamp(0.5rem, 2dvh, 1rem) 0.8rem; }
+    .match-time { font-size: clamp(1.2rem, 3.5dvh, 1.8rem); }
     .reset-button {
         font-size: 1.2rem;
         padding: 1rem 2rem;
