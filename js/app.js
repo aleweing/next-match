@@ -146,7 +146,9 @@ class NextMatchApp {
         const now = new Date();
         const matchIndex = this.filteredMatches.findIndex(match => {
             const matchDateTime = new Date(`${match.date}T${match.time}Z`);
-            return matchDateTime > now;
+//            return matchDateTime > now;
+        const matchEnd = new Date(matchDateTime.getTime() + 2.5 * 60 * 60 * 1000);
+        return matchEnd > now;
         });
 
         if (matchIndex !== -1) {
@@ -277,10 +279,20 @@ class NextMatchApp {
         const now = new Date();
         const diff = matchDateTime - now;
 
-        if (diff <= 0) {
+//        if (diff <= 0) {
+//            return "Partido finalizado";
+//        }
+// DESPUÉS
+    if (diff <= 0) {
+        const elapsed = Math.abs(diff);
+        const twoHalfHours = 2.5 * 60 * 60 * 1000;
+        if (elapsed < twoHalfHours) {
+            return "⚽ Partido iniciado";
+        } else {
             return "Partido finalizado";
         }
-
+    }
+        
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
