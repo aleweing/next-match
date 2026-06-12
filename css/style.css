@@ -414,63 +414,93 @@ body {
 }
 
 /* Landscape/Horizontal layout */
-@media (orientation: landscape) and (min-height: 500px) {
+@media (orientation: landscape) and (max-height: 500px) {
     .main {
         flex-direction: row;
+        align-items: center;
+        justify-content: center;
         gap: 1rem;
-        justify-content: flex-start;
+        padding: 0.3rem;
     }
 
     .match-container {
-        max-width: 500px;
-        flex-shrink: 0;
-    }
-
-    .title {
-        font-size: 1.4rem;
+        max-width: 100%;
+        flex: 1;
     }
 
     .match-card {
-        padding: 1.5rem 1.2rem;
+        padding: 0.5rem 1rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        gap: 0.5rem;
+        text-align: center;
     }
 
-    .team-name {
-        font-size: 1.1rem;
+    .tournament-badge {
+        display: none;
     }
 
-    .flag {
-        font-size: 2.2rem;
+    .team-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
     }
 
-    .match-time {
-        font-size: 2.5rem;
+    .vs-container {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .team-name { font-size: 0.9rem; }
+    .flag { font-size: 2rem; }
+
+    .match-date,
+    .match-time,
+    .countdown {
+        display: none;
     }
 }
 
 /* Tablet */
 @media (min-width: 768px) {
-    .title {
-        font-size: 1.4rem;
+    .match-container {
+        max-width: 600px;
     }
 
     .match-card {
-        padding: 1.5rem 1.2rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .tournament-badge {
+        font-size: 1rem;
     }
 
     .team-name {
-        font-size: 1.15rem;
-    }
-
-    .flag {
         font-size: 2.2rem;
     }
 
-    .match-time {
-        font-size: 2.5rem;
+    .flag {
+        font-size: 4.5rem;
     }
 
-    .match-container {
-        max-width: 500px;
+    .match-time {
+        font-size: 3rem;
+    }
+
+    .match-date {
+        font-size: 1.2rem;
+    }
+
+    .countdown-value {
+        font-size: 1.4rem;
+    }
+
+    .reset-button {
+        font-size: 1.1rem;
+        padding: 0.8rem 2rem;
     }
 }
 
@@ -494,5 +524,11 @@ body {
 
     .match-time {
         font-size: 1.8rem;
+    }
+    .reset-button {
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+        width: 100%;
+        margin-top: 1rem;
     }
 }
