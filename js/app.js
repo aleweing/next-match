@@ -16,7 +16,7 @@ class NextMatchApp {
         this.setupEventListeners();
         this.applyTheme();
         this.loadApiResults();
-        this.updateDisplay();
+        this.goToNextMatch(); // ← punto 1: siempre inicia en el próximo partido
         this.updateTotalMatches();
     }
 
@@ -36,7 +36,6 @@ class NextMatchApp {
             this.filterTeam = e.target.value.toLowerCase();
             this.applyFilter();
         });
-
         document.getElementById("clearFilter").addEventListener("click", () => {
             this.filterTeam = "";
             document.getElementById("teamFilter").value = "";
@@ -61,13 +60,11 @@ class NextMatchApp {
             if (e.key === "ArrowLeft") this.nextMatch();
         });
 
-        // 🔄 Redibujar al rotar pantalla
-        window.addEventListener("orientationchange", () => this.updateDisplay());
-    }
-
-    // Detectar orientación
-    isLandscape() {
-        return window.matchMedia("(orientation: landscape)").matches;
+        // Punto 2: redibujar inmediatamente al rotar
+        window.addEventListener("resize", () => {
+            clearTimeout(this._resizeTimer);
+            this._resizeTimer = setTimeout(() => this.updateDisplay(), 50);
+        });
     }
 
     toggleMenu(menu, overlay) {
@@ -152,7 +149,6 @@ class NextMatchApp {
             const matchEnd = new Date(matchDateTime.getTime() + 2.5 * 60 * 60 * 1000);
             return matchEnd > now;
         });
-
         this.currentMatchIndex = matchIndex !== -1 ? matchIndex : 0;
         this.updateDisplay();
     }
@@ -231,7 +227,24 @@ class NextMatchApp {
         });
     }
 
-    // 🔥 HTML dinámico según orientación
+    // Punto 3: SVG inline para banderas británicas
+    getFlag(flag, teamName) {
+        const name = teamName ? teamName.toLowerCase() : "";
+        if (name.includes("escocia") || name.includes("scotland")) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="#003399"/><line x1="0" y1="0" x2="60" y2="40" stroke="white" stroke-width="8"/><line x1="60" y1="0" x2="0" y2="40" stroke="white" stroke-width="8"/></svg>`;
+        }
+        if (name.includes("gales") || name.includes("wales")) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="20" fill="white"/><rect y="20" width="60" height="20" fill="#CC0000"/><text x="30" y="28" text-anchor="middle" font-size="20">🐉</text></svg>`;
+        }
+        if (name.includes("irlanda del norte") || name.includes("northern ireland")) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="white"/><line x1="0" y1="0" x2="60" y2="40" stroke="#CC0000" stroke-width="5"/><line x1="60" y1="0" x2="0" y2="40" stroke="#CC0000" stroke-width="5"/><rect x="22" y="0" width="16" height="40" fill="#CC0000"/><rect x="0" y="12" width="60" height="16" fill="#CC0000"/></svg>`;
+        }
+        if (name.includes("inglaterra") || name.includes("england")) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="white"/><rect x="24" y="0" width="12" height="40" fill="#CC0000"/><rect x="0" y="14" width="60" height="12" fill="#CC0000"/></svg>`;
+        }
+        return `<span class="flag-emoji">${flag}</span>`;
+    }
+
     updateDisplay() {
         const match = this.filteredMatches[this.currentMatchIndex];
         if (!match) return;
@@ -239,59 +252,52 @@ class NextMatchApp {
         const card = document.getElementById("matchCard");
         const localTime = this.convertToLocalTime(match.date, match.time);
         const countdown = this.getCountdown(match.date, match.time);
+        const isLandscape = window.innerWidth > window.innerHeight;
 
-        const isLandscape = this.isLandscape();
+        const flag1 = this.getFlag(match.flag1, match.team1);
+        const flag2 = this.getFlag(match.flag2, match.team2);
 
         if (isLandscape) {
-            // 🌄 HORIZONTAL
+            // Punto 5: vista horizontal — equipos en fila, datos debajo
             card.innerHTML = `
-                <div class="tournament-badge">Copa Mundial 2026</div>
-
-                <div class="teams-row">
+                <div class="landscape-teams">
                     <div class="team-section">
-                        <span class="flag">${match.flag1}</span>
+                        ${flag1}
                         <h2 class="team-name">${match.team1}</h2>
                     </div>
-
-                    <div class="match-center">
-                        <div class="match-date">${this.formatDate(match.date)}</div>
-                        <div class="match-time">${localTime}</div>
-                        <div class="countdown">
-                            <span class="countdown-value">${countdown}</span>
-                        </div>
+                    <div class="vs-center">
+                        <span class="vs-text">vs</span>
                     </div>
-
                     <div class="team-section">
-                        <span class="flag">${match.flag2}</span>
+                        ${flag2}
                         <h2 class="team-name">${match.team2}</h2>
                     </div>
                 </div>
+                <div class="match-info">
+                    <div class="match-date">${this.formatDate(match.date)}</div>
+                    <div class="match-time">${localTime}</div>
+                    <div class="countdown"><span class="countdown-value">${countdown}</span></div>
+                </div>
             `;
         } else {
-            // 📱 VERTICAL
+            // Punto 4: vista vertical — equipo1, bandera1, vs, equipo2, bandera2, fecha, hora, countdown
             card.innerHTML = `
                 <div class="tournament-badge">Copa Mundial 2026</div>
-
                 <div class="team-section">
-                    <span class="flag">${match.flag1}</span>
                     <h2 class="team-name">${match.team1}</h2>
+                    ${flag1}
                 </div>
-
                 <div class="vs-container">
                     <span class="vs-text">vs</span>
                 </div>
-
                 <div class="team-section">
-                    <span class="flag">${match.flag2}</span>
                     <h2 class="team-name">${match.team2}</h2>
+                    ${flag2}
                 </div>
-
-                <div class="match-info-vertical">
+                <div class="match-info">
                     <div class="match-date">${this.formatDate(match.date)}</div>
                     <div class="match-time">${localTime}</div>
-                    <div class="countdown">
-                        <span class="countdown-value">${countdown}</span>
-                    </div>
+                    <div class="countdown"><span class="countdown-value">${countdown}</span></div>
                 </div>
             `;
         }
@@ -335,24 +341,17 @@ class NextMatchApp {
         if (diff <= 0) {
             const elapsed = Math.abs(diff);
             const twoHalfHours = 2.5 * 60 * 60 * 1000;
-            if (elapsed < twoHalfHours) {
-                return "⚽ Partido iniciado";
-            } else {
-                return "Partido finalizado";
-            }
+            if (elapsed < twoHalfHours) return "⚽ Partido iniciado";
+            return "Partido finalizado";
         }
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        if (days > 0) {
-            return `En ${days}d ${hours}h`;
-        } else if (hours > 0) {
-            return `En ${hours}h ${minutes}m`;
-        } else {
-            return `En ${minutes}m`;
-        }
+        if (days > 0) return `En ${days}d ${hours}h`;
+        if (hours > 0) return `En ${hours}h ${minutes}m`;
+        return `En ${minutes}m`;
     }
 
     updatePositionIndicator() {
