@@ -274,7 +274,7 @@ class NextMatchApp {
                     </div>
                 </div>
                 <div class="match-info">
-                    <div class="match-date">${this.formatDate(match.date)}</div>
+                    <div class="match-date">${this.formatLocalDate(match.date, match.time)}</div>
                     <div class="match-time">${localTime}</div>
                     <div class="countdown"><span class="countdown-value">${countdown}</span></div>
                 </div>
@@ -295,7 +295,7 @@ class NextMatchApp {
                     ${flag2}
                 </div>
                 <div class="match-info">
-                    <div class="match-date">${this.formatDate(match.date)}</div>
+                    <div class="match-date">${this.formatLocalDate(match.date, match.time)}</div>
                     <div class="match-time">${localTime}</div>
                     <div class="countdown"><span class="countdown-value">${countdown}</span></div>
                 </div>
@@ -311,11 +311,12 @@ class NextMatchApp {
         const localMinutes = String(utcDate.getMinutes()).padStart(2, "0");
         return `${localHours}:${localMinutes}`;
     }
-
-    formatDate(dateStr) {
-        const date = new Date(dateStr + "T00:00:00");
+    
+    formatLocalDate(dateStr, timeStr) {
+        // Usar la fecha local derivada del UTC, no el string de fecha directamente
+        const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
         const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-        return date.toLocaleDateString("es-ES", options);
+        return utcDate.toLocaleDateString("es-ES", options);
     }
 
     getCountdown(dateStr, timeStr) {
