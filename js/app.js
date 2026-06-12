@@ -1,4 +1,4 @@
-// App principal para Next Match 
+// App principal para Next Match
 
 class NextMatchApp {
     constructor() {
@@ -8,10 +8,10 @@ class NextMatchApp {
         this.touchStartY = 0;
         this.isDarkTheme = this.loadTheme();
         this.filterTeam = "";
-        this.apiMatches = []; // Nuevo para usar API
+        this.apiMatches = [];
         this.init();
     }
-// Nuevo Init para usar API
+
     init() {
         this.setupEventListeners();
         this.applyTheme();
@@ -21,7 +21,6 @@ class NextMatchApp {
     }
 
     setupEventListeners() {
-        // Menu toggle
         const menuToggle = document.getElementById("menuToggle");
         const menu = document.getElementById("menu");
         const menuOverlay = document.getElementById("menuOverlay");
@@ -31,41 +30,44 @@ class NextMatchApp {
         menuClose.addEventListener("click", () => this.closeMenu(menu, menuOverlay));
         menuOverlay.addEventListener("click", () => this.closeMenu(menu, menuOverlay));
 
-        // Theme toggle
         document.getElementById("themeToggle").addEventListener("click", () => this.toggleTheme());
 
-        // Team filter
         document.getElementById("teamFilter").addEventListener("input", (e) => {
             this.filterTeam = e.target.value.toLowerCase();
             this.applyFilter();
         });
+
         document.getElementById("clearFilter").addEventListener("click", () => {
             this.filterTeam = "";
             document.getElementById("teamFilter").value = "";
             this.applyFilter();
         });
 
-        // Date jump
         document.getElementById("jumpButton").addEventListener("click", () => this.jumpToDate());
         document.getElementById("todayButton").addEventListener("click", () => this.goToNextMatch());
 
-        // Reset button (volver al inicio)
         const resetButton = document.getElementById("resetButton");
         if (resetButton) {
             resetButton.addEventListener("click", () => this.goToNextMatch());
         }
 
-        // Swipe
         const matchContainer = document.getElementById("matchContainer");
         matchContainer.addEventListener("touchstart", (e) => this.handleTouchStart(e));
         matchContainer.addEventListener("touchmove", (e) => e.preventDefault(), false);
         matchContainer.addEventListener("touchend", (e) => this.handleTouchEnd(e));
 
-        // Keyboard
         document.addEventListener("keydown", (e) => {
             if (e.key === "ArrowRight") this.prevMatch();
             if (e.key === "ArrowLeft") this.nextMatch();
         });
+
+        // 🔄 Redibujar al rotar pantalla
+        window.addEventListener("orientationchange", () => this.updateDisplay());
+    }
+
+    // Detectar orientación
+    isLandscape() {
+        return window.matchMedia("(orientation: landscape)").matches;
     }
 
     toggleMenu(menu, overlay) {
@@ -115,8 +117,8 @@ class NextMatchApp {
         if (!this.filterTeam) {
             this.filteredMatches = [...ALL_MATCHES];
         } else {
-            this.filteredMatches = ALL_MATCHES.filter(match => 
-                match.team1.toLowerCase().includes(this.filterTeam) || 
+            this.filteredMatches = ALL_MATCHES.filter(match =>
+                match.team1.toLowerCase().includes(this.filterTeam) ||
                 match.team2.toLowerCase().includes(this.filterTeam)
             );
         }
@@ -147,16 +149,11 @@ class NextMatchApp {
         const now = new Date();
         const matchIndex = this.filteredMatches.findIndex(match => {
             const matchDateTime = new Date(`${match.date}T${match.time}Z`);
-//            return matchDateTime > now;
-        const matchEnd = new Date(matchDateTime.getTime() + 2.5 * 60 * 60 * 1000);
-        return matchEnd > now;
+            const matchEnd = new Date(matchDateTime.getTime() + 2.5 * 60 * 60 * 1000);
+            return matchEnd > now;
         });
 
-        if (matchIndex !== -1) {
-            this.currentMatchIndex = matchIndex;
-        } else {
-            this.currentMatchIndex = 0;
-        }
+        this.currentMatchIndex = matchIndex !== -1 ? matchIndex : 0;
         this.updateDisplay();
     }
 
@@ -171,10 +168,7 @@ class NextMatchApp {
         const deltaX = touchEndX - this.touchStartX;
         const deltaY = touchEndY - this.touchStartY;
 
-        // Si movimiento es más vertical que horizontal, ignorar
         if (Math.abs(deltaY) > Math.abs(deltaX)) return;
-
-        // Requiere movimiento mínimo de 50px
         if (Math.abs(deltaX) < 50) return;
 
         if (deltaX > 0) {
@@ -207,7 +201,6 @@ class NextMatchApp {
     addSwipeAnimation(direction) {
         const card = document.getElementById("matchCard");
         card.classList.remove("slide-left", "slide-right");
-        // Trigger reflow
         void card.offsetWidth;
         card.classList.add(direction === "left" ? "slide-left" : "slide-right");
     }
@@ -215,7 +208,6 @@ class NextMatchApp {
     bounceCard() {
         const card = document.getElementById("matchCard");
         card.classList.remove("bounce");
-        // Trigger reflow para reiniciar animación
         void card.offsetWidth;
         card.classList.add("bounce");
     }
@@ -238,53 +230,79 @@ class NextMatchApp {
             return apiDate === match.date && apiTime === match.time;
         });
     }
-    
+
+    // 🔥 HTML dinámico según orientación
     updateDisplay() {
-    const match = this.filteredMatches[this.currentMatchIndex];
-    if (!match) return;
+        const match = this.filteredMatches[this.currentMatchIndex];
+        if (!match) return;
 
-    const card = document.getElementById("matchCard");
-    const localTime = this.convertToLocalTime(match.date, match.time);
-    const countdown = this.getCountdown(match.date, match.time);
+        const card = document.getElementById("matchCard");
+        const localTime = this.convertToLocalTime(match.date, match.time);
+        const countdown = this.getCountdown(match.date, match.time);
 
-    card.innerHTML = `
-        <div class="tournament-badge">Copa Mundial 2026</div>
-        
-        <div class="teams-row">
-            <div class="team-section">
-                <span class="flag">${match.flag1}</span>
-                <h2 class="team-name">${match.team1}</h2>
-            </div>
+        const isLandscape = this.isLandscape();
 
-            <div class="match-center">
+        if (isLandscape) {
+            // 🌄 HORIZONTAL
+            card.innerHTML = `
+                <div class="tournament-badge">Copa Mundial 2026</div>
+
+                <div class="teams-row">
+                    <div class="team-section">
+                        <span class="flag">${match.flag1}</span>
+                        <h2 class="team-name">${match.team1}</h2>
+                    </div>
+
+                    <div class="match-center">
+                        <div class="match-date">${this.formatDate(match.date)}</div>
+                        <div class="match-time">${localTime}</div>
+                        <div class="countdown">
+                            <span class="countdown-value">${countdown}</span>
+                        </div>
+                    </div>
+
+                    <div class="team-section">
+                        <span class="flag">${match.flag2}</span>
+                        <h2 class="team-name">${match.team2}</h2>
+                    </div>
+                </div>
+            `;
+        } else {
+            // 📱 VERTICAL
+            card.innerHTML = `
+                <div class="tournament-badge">Copa Mundial 2026</div>
+
+                <div class="team-section">
+                    <span class="flag">${match.flag1}</span>
+                    <h2 class="team-name">${match.team1}</h2>
+                </div>
+
                 <div class="vs-container">
                     <span class="vs-text">vs</span>
                 </div>
-                <div class="match-date">${this.formatDate(match.date)}</div>
-                <div class="match-time">${localTime}</div>
-                <div class="countdown">
-                    <span class="countdown-value">${countdown}</span>
+
+                <div class="team-section">
+                    <span class="flag">${match.flag2}</span>
+                    <h2 class="team-name">${match.team2}</h2>
                 </div>
-            </div>
 
-            <div class="team-section">
-                <span class="flag">${match.flag2}</span>
-                <h2 class="team-name">${match.team2}</h2>
-            </div>
-        </div>
-    `;
+                <div class="match-info-vertical">
+                    <div class="match-date">${this.formatDate(match.date)}</div>
+                    <div class="match-time">${localTime}</div>
+                    <div class="countdown">
+                        <span class="countdown-value">${countdown}</span>
+                    </div>
+                </div>
+            `;
+        }
 
-    this.updatePositionIndicator();
-}
+        this.updatePositionIndicator();
+    }
 
     convertToLocalTime(dateStr, timeStr) {
-        // Crear fecha en UTC
         const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
-        
-        // Obtener hora local del dispositivo
         const localHours = String(utcDate.getHours()).padStart(2, "0");
         const localMinutes = String(utcDate.getMinutes()).padStart(2, "0");
-        
         return `${localHours}:${localMinutes}`;
     }
 
@@ -294,51 +312,48 @@ class NextMatchApp {
         return date.toLocaleDateString("es-ES", options);
     }
 
-getCountdown(dateStr, timeStr) {
-    const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
-    const now = new Date();
-    const diff = matchDateTime - now;
+    getCountdown(dateStr, timeStr) {
+        const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
+        const now = new Date();
+        const diff = matchDateTime - now;
 
-    // Buscar resultado en la API
-    const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
+        const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
 
-    if (apiMatch) {
-        if (apiMatch.status === "FINISHED") {
-            const home = apiMatch.score.fullTime.home;
-            const away = apiMatch.score.fullTime.away;
-            return `Finalizado · ${home} - ${away}`;
+        if (apiMatch) {
+            if (apiMatch.status === "FINISHED") {
+                const home = apiMatch.score.fullTime.home;
+                const away = apiMatch.score.fullTime.away;
+                return `Finalizado · ${home} - ${away}`;
+            }
+            if (apiMatch.status === "IN_PLAY" || apiMatch.status === "PAUSED") {
+                const home = apiMatch.score.fullTime.home ?? 0;
+                const away = apiMatch.score.fullTime.away ?? 0;
+                return `⚽ En juego · ${home} - ${away}`;
+            }
         }
-        if (apiMatch.status === "IN_PLAY" || apiMatch.status === "PAUSED") {
-            const home = apiMatch.score.fullTime.home ?? 0;
-            const away = apiMatch.score.fullTime.away ?? 0;
-            return `⚽ En juego · ${home} - ${away}`;
-        }
-    }
 
-    // Fallback por tiempo si no hay dato de API
-    if (diff <= 0) {
-        const elapsed = Math.abs(diff);
-        const twoHalfHours = 2.5 * 60 * 60 * 1000;
-        if (elapsed < twoHalfHours) {
-            return "⚽ Partido iniciado";
+        if (diff <= 0) {
+            const elapsed = Math.abs(diff);
+            const twoHalfHours = 2.5 * 60 * 60 * 1000;
+            if (elapsed < twoHalfHours) {
+                return "⚽ Partido iniciado";
+            } else {
+                return "Partido finalizado";
+            }
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        if (days > 0) {
+            return `En ${days}d ${hours}h`;
+        } else if (hours > 0) {
+            return `En ${hours}h ${minutes}m`;
         } else {
-            return "Partido finalizado";
+            return `En ${minutes}m`;
         }
     }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (days > 0) {
-        return `En ${days}d ${hours}h`;
-    } else if (hours > 0) {
-        return `En ${hours}h ${minutes}m`;
-    } else {
-        return `En ${minutes}m`;
-    }
-}
-        
 
     updatePositionIndicator() {
         document.getElementById("currentPosition").textContent = this.currentMatchIndex + 1;
@@ -349,9 +364,9 @@ getCountdown(dateStr, timeStr) {
         document.getElementById("totalMatches").textContent = this.filteredMatches.length;
     }
 
-startCountdownUpdates() {
+    startCountdownUpdates() {
         setInterval(() => {
-            const hasLiveMatch = this.apiMatches.some(m => 
+            const hasLiveMatch = this.apiMatches.some(m =>
                 m.status === "IN_PLAY" || m.status === "PAUSED"
             );
             if (hasLiveMatch) {
@@ -361,10 +376,8 @@ startCountdownUpdates() {
             }
         }, 60000);
     }
+}
 
-}  // ← cierre de la clase NextMatchApp
-
-// Inicializar app cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
     const app = new NextMatchApp();
     app.startCountdownUpdates();
