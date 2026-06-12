@@ -350,18 +350,19 @@ getCountdown(dateStr, timeStr) {
     }
 
 startCountdownUpdates() {
-    setInterval(() => {
-        // Si hay algún partido en curso, recargar API
-        const hasLiveMatch = this.apiMatches.some(m => 
-            m.status === "IN_PLAY" || m.status === "PAUSED"
-        );
-        if (hasLiveMatch) {
-            this.loadApiResults();
-        } else {
-            this.updateDisplay();
-        }
-    }, 60000);
-}
+        setInterval(() => {
+            const hasLiveMatch = this.apiMatches.some(m => 
+                m.status === "IN_PLAY" || m.status === "PAUSED"
+            );
+            if (hasLiveMatch) {
+                this.loadApiResults();
+            } else {
+                this.updateDisplay();
+            }
+        }, 60000);
+    }
+
+}  // ← cierre de la clase NextMatchApp
 
 // Inicializar app cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
