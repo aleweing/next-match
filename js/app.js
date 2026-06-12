@@ -349,11 +349,18 @@ getCountdown(dateStr, timeStr) {
         document.getElementById("totalMatches").textContent = this.filteredMatches.length;
     }
 
-    startCountdownUpdates() {
-        setInterval(() => {
+startCountdownUpdates() {
+    setInterval(() => {
+        // Si hay algún partido en curso, recargar API
+        const hasLiveMatch = this.apiMatches.some(m => 
+            m.status === "IN_PLAY" || m.status === "PAUSED"
+        );
+        if (hasLiveMatch) {
+            this.loadApiResults();
+        } else {
             this.updateDisplay();
-        }, 60000); // Actualizar cada minuto
-    }
+        }
+    }, 60000);
 }
 
 // Inicializar app cuando el DOM esté listo
