@@ -1,7 +1,7 @@
 ⚽ **Next Match** ⚽
 ==================
 
-Aplicación web para visualizar el próximo partido de la Copa Mundial 2026.
+Aplicación web para visualizar los partidos de la Copa Mundial 2026, con resultados en tiempo real.
 
 ## Características
 
@@ -9,6 +9,18 @@ Aplicación web para visualizar el próximo partido de la Copa Mundial 2026.
 - Desliza hacia la derecha para ver el partido anterior
 - Desliza hacia la izquierda para ver el próximo partido
 - Rebote visual al llegar al final o inicio
+
+✅ **Resultados en tiempo real**
+- Integración con la API de football-data.org via proxy Cloudflare Workers
+- Muestra marcador en vivo durante el partido (⚽ En juego · X - X)
+- Muestra resultado final automáticamente (Finalizado · X - X)
+- Se actualiza cada minuto cuando hay un partido en curso
+
+✅ **Countdown inteligente**
+- Cuenta regresiva hasta el partido (días, horas, minutos)
+- Al iniciar el partido muestra "⚽ Partido iniciado"
+- A las 2,5 horas marca el partido como finalizado si la API no responde
+- La fecha y hora se muestran siempre en la zona horaria del dispositivo
 
 ✅ **Filtro por equipo**
 - Filtra partidos de tu equipo favorito
@@ -18,19 +30,19 @@ Aplicación web para visualizar el próximo partido de la Copa Mundial 2026.
 - Calendario seleccionable
 - Ir al próximo partido disponible
 
-✅ **Información de cada partido**
-- Equipos con banderas emoji
-- Fecha completa en español
-- Hora respetando la zona horaria del dispositivo
-- Countdown hasta el partido (días, horas, minutos)
-
 ✅ **Tema claro/oscuro**
 - Toggle para cambiar tema
 - Preferencia guardada en localStorage
 
-✅ **Responsive**
-- Optimizado para móvil (cualquier tamaño de pantalla)
-- Compatible con iPhone y Android
+✅ **Diseño adaptable**
+- Vista vertical: equipo 1, bandera, vs, equipo 2, bandera, fecha, hora, countdown
+- Vista horizontal: equipos y banderas en fila, datos debajo
+- Tamaños fluidos con clamp() para adaptarse a cualquier pantalla
+- Optimizado para iPhone y Android de cualquier tamaño
+
+✅ **Banderas**
+- Emojis de bandera para la mayoría de países
+- SVG inline para banderas británicas (Inglaterra, Escocia, Gales, Irlanda del Norte)
 
 ## Estructura
 
@@ -52,14 +64,22 @@ Aplicación web para visualizar el próximo partido de la Copa Mundial 2026.
    cd next-match
    ```
 
-2. Abre `index.html` en tu navegador (funciona offline)
+2. Abre `index.html` desde un servidor local (necesario para la API):
+   ```bash
+   npx serve .
+   # o
+   python3 -m http.server 8000
+   ```
+
+> ⚠️ No funciona abriendo el archivo directamente (`file://`) por restricciones CORS de la API.
 
 ## Uso
 
 ### Navegación
 - **Swipe derecha**: Partido anterior
 - **Swipe izquierda**: Próximo partido
-- **Flechas del teclado**: ← → (si estás en escritorio)
+- **Flechas del teclado**: ← → (escritorio)
+- **Botón Próximo partido**: Salta siempre al siguiente partido pendiente
 
 ### Menú (☰)
 - **Tema**: Cambia entre claro y oscuro
@@ -67,20 +87,29 @@ Aplicación web para visualizar el próximo partido de la Copa Mundial 2026.
 - **Ir a una fecha**: Selecciona una fecha específica del calendario
 - **Próximo partido**: Vuelve al próximo partido disponible
 
-## Tecnología
+## Arquitectura de datos
 
-- **HTML5**: Estructura semántica
-- **CSS3**: Estilos responsive con temas
-- **JavaScript vanilla**: Sin dependencias externas
-- **Emojis**: Para banderas y iconos (máxima compatibilidad)
+Los resultados se obtienen en tiempo real mediante:
 
-## Datos
+```
+GitHub Pages → Cloudflare Worker (proxy) → football-data.org API
+```
+
+El Worker resuelve el problema de CORS permitiendo llamadas desde cualquier dominio. Se actualiza automáticamente cada minuto cuando hay un partido en curso.
 
 Los 104 partidos están hardcodeados en `js/data.js` con:
 - Fecha (formato ISO: YYYY-MM-DD)
 - Hora UTC
-- Nombres de equipos
-- Banderas emoji (🇲🇽, 🇿🇦, etc.)
+- Nombres de equipos en español
+- Banderas emoji
+
+## Tecnología
+
+- **HTML5**: Estructura semántica
+- **CSS3**: Responsive con clamp(), dvh, y media queries por orientación
+- **JavaScript vanilla**: Sin dependencias externas
+- **Cloudflare Workers**: Proxy gratuito para la API de resultados
+- **football-data.org**: API de resultados en tiempo real
 
 ## Licencia
 
