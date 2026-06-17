@@ -24,10 +24,10 @@ const MATCHES = [
   { date: "2026-06-16", time: "22:00", team1: "Irak", team2: "Noruega", flag1: "🇮🇶", flag2: "🇳🇴" },
   { date: "2026-06-17", time: "01:00", team1: "Argentina", team2: "Argelia", flag1: "🇦🇷", flag2: "🇩🇿" },
   { date: "2026-06-17", time: "04:00", team1: "Austria", team2: "Jordania", flag1: "🇦🇹", flag2: "🇯🇴" },
-  { date: "2026-06-17", time: "18:00", team1: "Portugal", team2: "RD Congo", flag1: "🇵🇹", flag2: "🇨🇩" },
-  { date: "2026-06-17", time: "21:00", team1: "Inglaterra", team2: "Croacia", flag1: "🇬🇧", flag2: "🇭🇷" },
-  { date: "2026-06-18", time: "00:00", team1: "Ghana", team2: "Panamá", flag1: "🇬🇭", flag2: "🇵🇦" },
-  { date: "2026-06-18", time: "03:00", team1: "Uzbekistán", team2: "Colombia", flag1: "🇺🇿", flag2: "🇨🇴" },
+  { date: "2026-06-17", time: "17:00", team1: "Portugal", team2: "RD Congo", flag1: "🇵🇹", flag2: "🇨🇩" },
+  { date: "2026-06-17", time: "20:00", team1: "Inglaterra", team2: "Croacia", flag1: "🇬🇧", flag2: "🇭🇷" },
+  { date: "2026-06-17", time: "23:00", team1: "Ghana", team2: "Panamá", flag1: "🇬🇭", flag2: "🇵🇦" },
+  { date: "2026-06-18", time: "02:00", team1: "Uzbekistán", team2: "Colombia", flag1: "🇺🇿", flag2: "🇨🇴" },
  
     // FASE DE GRUPOS - Jornada 2
   { date: "2026-06-18", time: "16:00", team1: "República Checa", team2: "Sudáfrica", flag1: "🇨🇿", flag2: "🇿🇦" },
