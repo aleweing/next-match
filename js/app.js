@@ -210,8 +210,11 @@ class NextMatchApp {
 
 async loadApiResults() {
     try {
+        console.log("Iniciando fetch..."); // ← añadir
         const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
+        console.log("Response status:", response.status); // ← añadir
         const data = await response.json();
+        console.log("Data keys:", Object.keys(data)); // ← añadir
         
         if (data.errorCode === 429 || !data.matches) {
             console.warn("Límite de API:", data);
@@ -220,10 +223,10 @@ async loadApiResults() {
         }
         
         this.apiMatches = data.matches || [];
-        console.log("apiMatches cargados:", this.apiMatches.length); // ← temporal
+        console.log("apiMatches cargados:", this.apiMatches.length);
         this.updateDisplay();
     } catch (err) {
-        console.warn("No se pudieron cargar resultados:", err);
+        console.error("Error detallado:", err); // ← cambiar warn por error
     }
 }
 
