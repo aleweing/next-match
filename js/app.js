@@ -219,13 +219,75 @@ class NextMatchApp {
         }
     }
 
-    getApiMatch(match) {
-        return this.apiMatches.find(m => {
-            const apiDate = m.utcDate.slice(0, 10);
-            const apiTime = m.utcDate.slice(11, 16);
-            return apiDate === match.date && apiTime === match.time;
-        });
-    }
+getApiMatch(match) {
+    return this.apiMatches.find(m => {
+        const apiDate = m.utcDate.slice(0, 10);
+        const apiTime = m.utcDate.slice(11, 16);
+        if (apiDate !== match.date || apiTime !== match.time) return false;
+
+        // Si hay colisión de fecha+hora, verificar por nombre de equipo
+        const apiHome = m.homeTeam.name.toLowerCase();
+        const apiAway = m.awayTeam.name.toLowerCase();
+        const team1 = match.team1.toLowerCase();
+        const team2 = match.team2.toLowerCase();
+
+        // Mapa de nombres API → español para los más problemáticos
+        const nameMap = {
+            "south africa": "sudáfrica",
+            "south korea": "república de corea",
+            "czechia": "república checa",
+            "bosnia-herzegovina": "bosnia y herzegovina",
+            "united states": "estados unidos",
+            "ivory coast": "costa de marfil",
+            "netherlands": "países bajos",
+            "saudi arabia": "arabia saudí",
+            "iran": "ri de irán",
+            "new zealand": "nueva zelanda",
+            "cape verde islands": "cabo verde",
+            "congo dr": "rd congo",
+            "england": "inglaterra",
+            "scotland": "escocia",
+            "germany": "alemania",
+            "france": "francia",
+            "norway": "noruega",
+            "algeria": "argelia",
+            "austria": "austria",
+            "jordan": "jordania",
+            "ghana": "ghana",
+            "uzbekistan": "uzbekistán",
+            "mexico": "méxico",
+            "canada": "canadá",
+            "belgium": "bélgica",
+            "tunisia": "túnez",
+            "turkey": "turquía",
+            "sweden": "suecia",
+            "japan": "japón",
+            "brazil": "brasil",
+            "panama": "panamá",
+            "croatia": "croacia",
+            "colombia": "colombia",
+            "portugal": "portugal",
+            "uruguay": "uruguay",
+            "senegal": "senegal",
+            "morocco": "marruecos",
+            "ecuador": "ecuador",
+            "paraguay": "paraguay",
+            "australia": "australia",
+            "argentina": "argentina",
+            "spain": "españa",
+            "qatar": "catar",
+            "haiti": "haití",
+            "iraq": "irak",
+        };
+
+        const normalize = (name) => nameMap[name] || name;
+
+        return (
+            normalize(apiHome) === team1 || normalize(apiAway) === team2 ||
+            normalize(apiHome) === team2 || normalize(apiAway) === team1
+        );
+    });
+}
 
     // Punto 3: SVG inline para banderas británicas
     getFlag(flag, teamName) {
