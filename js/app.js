@@ -284,6 +284,7 @@ getApiMatch(match) {
     };
 
     return this.apiMatches.find(m => {
+        if (!m.homeTeam || !m.homeTeam.name) return false;
         const apiDate = m.utcDate.slice(0, 10);
         const apiTime = m.utcDate.slice(11, 16);
         if (apiDate !== match.date || apiTime !== match.time) return false;
