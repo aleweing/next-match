@@ -208,16 +208,24 @@ class NextMatchApp {
         card.classList.add("bounce");
     }
 
-    async loadApiResults() {
-        try {
-            const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
-            const data = await response.json();
-            this.apiMatches = data.matches || [];
-            this.updateDisplay();
-        } catch (err) {
-            console.warn("No se pudieron cargar resultados:", err);
+async loadApiResults() {
+    try {
+        const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
+        const data = await response.json();
+        
+        if (data.errorCode === 429 || !data.matches) {
+            console.warn("Límite de API:", data);
+            setTimeout(() => this.loadApiResults(), 15000);
+            return;
         }
+        
+        this.apiMatches = data.matches || [];
+        console.log("apiMatches cargados:", this.apiMatches.length); // ← temporal
+        this.updateDisplay();
+    } catch (err) {
+        console.warn("No se pudieron cargar resultados:", err);
     }
+}
 
 getApiMatch(match) {
     if (!match || !match.team1 || match.team1 === "TBD") return undefined;
