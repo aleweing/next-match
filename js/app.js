@@ -220,11 +220,16 @@ class NextMatchApp {
     }
 
 getApiMatch(match) {
-    const normalize = (str) => str
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim();
+    if (!match || !match.team1 || match.team1 === "TBD") return undefined;
+
+    const normalize = (str) => {
+        if (!str) return "";
+        return str
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
 
     const nameMap = {
         "switzerland": "suiza",
