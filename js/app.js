@@ -220,19 +220,25 @@ class NextMatchApp {
     }
 
 getApiMatch(match) {
-    // Mapa completo inglés → español (homeTeam de la API)
+    const normalize = (str) => str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+
     const nameMap = {
         "switzerland": "suiza",
         "bosnia-herzegovina": "bosnia y herzegovina",
         "morocco": "marruecos",
         "scotland": "escocia",
-        "czechia": "república checa",
-        "south africa": "sudáfrica",
+        "czechia": "republica checa",
+        "south africa": "sudafrica",
         "ecuador": "ecuador",
+        "curacao": "curazao",
         "curaçao": "curazao",
-        "tunisia": "túnez",
-        "japan": "japón",
-        "turkey": "turquía",
+        "tunisia": "tunez",
+        "japan": "japon",
+        "turkey": "turquia",
         "paraguay": "paraguay",
         "norway": "noruega",
         "senegal": "senegal",
@@ -240,42 +246,36 @@ getApiMatch(match) {
         "cape verde islands": "cabo verde",
         "new zealand": "nueva zelanda",
         "egypt": "egipto",
-        "panama": "panamá",
+        "panama": "panama",
         "croatia": "croacia",
         "colombia": "colombia",
         "congo dr": "rd congo",
         "jordan": "jordania",
         "algeria": "argelia",
-        "mexico": "méxico",
-        "south korea": "república de corea",
-        "canada": "canadá",
+        "mexico": "mexico",
+        "south korea": "republica de corea",
+        "canada": "canada",
         "united states": "estados unidos",
         "qatar": "catar",
         "brazil": "brasil",
-        "haiti": "haití",
+        "haiti": "haiti",
         "australia": "australia",
-        "netherlands": "países bajos",
+        "netherlands": "paises bajos",
         "germany": "alemania",
         "ivory coast": "costa de marfil",
         "sweden": "suecia",
-        "spain": "españa",
-        "saudi arabia": "arabia saudí",
-        "belgium": "bélgica",
-        "iran": "ri de irán",
+        "spain": "espana",
+        "saudi arabia": "arabia saudi",
+        "belgium": "belgica",
+        "iran": "ri de iran",
         "argentina": "argentina",
         "austria": "austria",
         "france": "francia",
         "iraq": "irak",
         "portugal": "portugal",
-        "uzbekistan": "uzbekistán",
+        "uzbekistan": "uzbekistan",
         "england": "inglaterra",
         "ghana": "ghana",
-        "panama": "panamá",
-        "croatia": "croacia",
-        "colombia": "colombia",
-        "costa rica": "costa rica",
-        "senegal": "senegal",
-        "nigeria": "nigeria",
     };
 
     return this.apiMatches.find(m => {
@@ -283,12 +283,11 @@ getApiMatch(match) {
         const apiTime = m.utcDate.slice(11, 16);
         if (apiDate !== match.date || apiTime !== match.time) return false;
 
-        // Comparar por homeTeam traducido
-        const apiHome = nameMap[m.homeTeam.name.toLowerCase()] || m.homeTeam.name.toLowerCase();
-        return apiHome === match.team1.toLowerCase();
+        const apiHome = normalize(m.homeTeam.name);
+        const mapped = nameMap[apiHome] || apiHome;
+        return mapped === normalize(match.team1);
     });
 }
-
     // Punto 3: SVG inline para banderas británicas
     getFlag(flag, teamName) {
         const name = teamName ? teamName.toLowerCase() : "";
