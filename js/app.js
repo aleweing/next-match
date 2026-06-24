@@ -220,72 +220,72 @@ class NextMatchApp {
     }
 
 getApiMatch(match) {
+    // Mapa completo inglés → español (homeTeam de la API)
+    const nameMap = {
+        "switzerland": "suiza",
+        "bosnia-herzegovina": "bosnia y herzegovina",
+        "morocco": "marruecos",
+        "scotland": "escocia",
+        "czechia": "república checa",
+        "south africa": "sudáfrica",
+        "ecuador": "ecuador",
+        "curaçao": "curazao",
+        "tunisia": "túnez",
+        "japan": "japón",
+        "turkey": "turquía",
+        "paraguay": "paraguay",
+        "norway": "noruega",
+        "senegal": "senegal",
+        "uruguay": "uruguay",
+        "cape verde islands": "cabo verde",
+        "new zealand": "nueva zelanda",
+        "egypt": "egipto",
+        "panama": "panamá",
+        "croatia": "croacia",
+        "colombia": "colombia",
+        "congo dr": "rd congo",
+        "jordan": "jordania",
+        "algeria": "argelia",
+        "mexico": "méxico",
+        "south korea": "república de corea",
+        "canada": "canadá",
+        "united states": "estados unidos",
+        "qatar": "catar",
+        "brazil": "brasil",
+        "haiti": "haití",
+        "australia": "australia",
+        "netherlands": "países bajos",
+        "germany": "alemania",
+        "ivory coast": "costa de marfil",
+        "sweden": "suecia",
+        "spain": "españa",
+        "saudi arabia": "arabia saudí",
+        "belgium": "bélgica",
+        "iran": "ri de irán",
+        "argentina": "argentina",
+        "austria": "austria",
+        "france": "francia",
+        "iraq": "irak",
+        "portugal": "portugal",
+        "uzbekistan": "uzbekistán",
+        "england": "inglaterra",
+        "ghana": "ghana",
+        "panama": "panamá",
+        "croatia": "croacia",
+        "colombia": "colombia",
+        "costa rica": "costa rica",
+        "senegal": "senegal",
+        "nigeria": "nigeria",
+    };
+
     return this.apiMatches.find(m => {
         const apiDate = m.utcDate.slice(0, 10);
         const apiTime = m.utcDate.slice(11, 16);
         if (apiDate !== match.date || apiTime !== match.time) return false;
 
-        // Si hay colisión de fecha+hora, verificar por nombre de equipo
-        const apiHome = m.homeTeam.name.toLowerCase();
-        const apiAway = m.awayTeam.name.toLowerCase();
-        const team1 = match.team1.toLowerCase();
-        const team2 = match.team2.toLowerCase();
-
-        // Mapa de nombres API → español para los más problemáticos
-        const nameMap = {
-            "south africa": "sudáfrica",
-            "south korea": "república de corea",
-            "czechia": "república checa",
-            "bosnia-herzegovina": "bosnia y herzegovina",
-            "united states": "estados unidos",
-            "ivory coast": "costa de marfil",
-            "netherlands": "países bajos",
-            "saudi arabia": "arabia saudí",
-            "iran": "ri de irán",
-            "new zealand": "nueva zelanda",
-            "cape verde islands": "cabo verde",
-            "congo dr": "rd congo",
-            "england": "inglaterra",
-            "scotland": "escocia",
-            "germany": "alemania",
-            "france": "francia",
-            "norway": "noruega",
-            "algeria": "argelia",
-            "austria": "austria",
-            "jordan": "jordania",
-            "ghana": "ghana",
-            "uzbekistan": "uzbekistán",
-            "mexico": "méxico",
-            "canada": "canadá",
-            "belgium": "bélgica",
-            "tunisia": "túnez",
-            "turkey": "turquía",
-            "sweden": "suecia",
-            "japan": "japón",
-            "brazil": "brasil",
-            "panama": "panamá",
-            "croatia": "croacia",
-            "colombia": "colombia",
-            "portugal": "portugal",
-            "uruguay": "uruguay",
-            "senegal": "senegal",
-            "morocco": "marruecos",
-            "ecuador": "ecuador",
-            "paraguay": "paraguay",
-            "australia": "australia",
-            "argentina": "argentina",
-            "spain": "españa",
-            "qatar": "catar",
-            "haiti": "haití",
-            "iraq": "irak",
-        };
-
-        const normalize = (name) => nameMap[name] || name;
-
-        return (
-            normalize(apiHome) === team1 || normalize(apiAway) === team2 ||
-            normalize(apiHome) === team2 || normalize(apiAway) === team1
-        );
+        // Comparar por homeTeam traducido
+        const apiHome = nameMap[m.homeTeam.name.toLowerCase()] || m.homeTeam.name.toLowerCase();
+        return apiHome === match.team1.toLowerCase();
     });
 }
 
