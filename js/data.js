@@ -84,19 +84,19 @@ const MATCHES = [
     
     // DIECISEISAVOS DE FINAL
     { date: "2026-06-28", time: "19:00", team1: "2º Grupo A", team2: "2º Grupo B", flag1: "🥇", flag2: "🥈" },
-  { date: "2026-06-29", time: "19:00", team1: "1º Grupo E", team2: "3º Grupo A/B/C/D/F", flag1: "🥇", flag2: "🥈" },
+  { date: "2026-06-29", time: "19:00", team1: "Alemania", team2: "3º Grupo A/B/C/D/F", flag1: "🇩🇪", flag2: "🥈" },
   { date: "2026-06-29", time: "22:00", team1: "1º Grupo F", team2: "2º Grupo C", flag1: "🥇", flag2: "🥈" },
   { date: "2026-06-30", time: "01:00", team1: "1º Grupo C", team2: "2º Grupo F", flag1: "🥇", flag2: "🥈" },
   { date: "2026-06-30", time: "19:00", team1: "1º Grupo I", team2: "3º Grupo C/D/F/G/H", flag1: "🥇", flag2: "🥈" },
   { date: "2026-06-30", time: "22:00", team1: "2º Grupo E", team2: "2º Grupo I", flag1: "🥇", flag2: "🥈" },
-  { date: "2026-07-01", time: "01:00", team1: "1º Grupo A", team2: "3º Grupo C/E/F/H/I", flag1: "🥇", flag2: "🥈" },
+  { date: "2026-07-01", time: "01:00", team1: "México", team2: "3º Grupo C/E/F/H/I", flag1: "🇲🇽", flag2: "🥈" },
   { date: "2026-07-01", time: "19:00", team1: "1º Grupo L", team2: "3º Grupo E/H/I/J/K", flag1: "🥇", flag2: "🥈" },  
-  { date: "2026-07-01", time: "22:00", team1: "1º Grupo D", team2: "3º Grupo B/E/F/I/J", flag1: "🥇", flag2: "🥈" },
+  { date: "2026-07-01", time: "22:00", team1: "Estados Unidos", team2: "3º Grupo B/E/F/I/J", flag1: "🇺🇸", flag2: "🥈" },
   { date: "2026-07-02", time: "01:00", team1: "1º Grupo G", team2: "3º Grupo A/E/H/I/J", flag1: "🥇", flag2: "🥈" },
   { date: "2026-07-02", time: "19:00", team1: "2º Grupo K", team2: "2º Grupo L", flag1: "🥇", flag2: "🥈" },
   { date: "2026-07-02", time: "22:00", team1: "1º Grupo H", team2: "2º Grupo J", flag1: "🥇", flag2: "🥈" },
   { date: "2026-07-03", time: "01:00", team1: "1º Grupo B", team2: "3º Grupo E/F/G/I/J", flag1: "🥇", flag2: "🥈" },
-  { date: "2026-07-03", time: "23:00", team1: "1º Grupo J", team2: "2º Grupo H", flag1: "🥇", flag2: "🥈" },
+  { date: "2026-07-03", time: "23:00", team1: "Argentina", team2: "2º Grupo H", flag1: "🇦🇷", flag2: "🥈" },
   { date: "2026-07-04", time: "02:00", team1: "1º Grupo K", team2: "3º Grupo D/E/I/J/L", flag1: "🥇", flag2: "🥈" },
   { date: "2026-07-04", time: "03:00", team1: "2º Grupo D", team2: "2º Grupo G", flag1: "🥇", flag2: "🥈" },
     
