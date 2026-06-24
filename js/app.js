@@ -404,6 +404,9 @@ getApiMatch(match) {
 
         const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
 
+        // LOG TEMPORAL
+    if (diff < 0) console.log(`Buscando ${dateStr} ${timeStr} → encontrado:`, apiMatch?.homeTeam?.name, apiMatch?.status);
+        
         if (apiMatch) {
             if (apiMatch.status === "FINISHED") {
                 const home = apiMatch.score.fullTime.home;
