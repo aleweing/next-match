@@ -334,20 +334,13 @@ body {
     color: var(--text-primary);
 }
 
-/* Punto 3: bandera emoji */
-.flag-emoji {
-    font-size: clamp(2rem, 7dvh, 4rem);
-    margin: clamp(0.1rem, 0.5dvh, 0.2rem) 0;
-    display: inline-block;
-}
-
-/* Punto 3: bandera SVG inline */
-.flag-svg {
-    width: clamp(1.6rem, 5.6dvh, 3.2rem);  /* ~80% del tamaño emoji */
+/* Escudos desde API */
+.flag-crest {
+    width: clamp(2rem, 7dvh, 4rem);
     height: auto;
     margin: clamp(0.1rem, 0.5dvh, 0.2rem) 0;
-    border-radius: 3px;
     display: block;
+    object-fit: contain;
 }
 
 .vs-container {
@@ -459,8 +452,7 @@ body {
 @media (min-width: 768px) and (orientation: portrait) {
     .match-container { max-width: 500px; }
     .team-name { font-size: 2.2rem; }
-    .flag-emoji { font-size: 4.5rem; }
-    .flag-svg { width: 3.6rem; }
+    .flag-crest { width: 4.5rem; }
     .match-time { font-size: 3rem; }
     .match-date { font-size: 1.2rem; }
     .countdown-value { font-size: 1.4rem; }
@@ -508,8 +500,7 @@ body {
     .tournament-badge { display: none; }
 
     .team-name { font-size: 1.3rem; }
-    .flag-emoji { font-size: 2.5rem; }
-    .flag-svg { width: 2rem; }
+    .flag-crest { width: clamp(1.5rem, 5dvh, 2.5rem); }
     .match-date { font-size: 0.85rem; }
     .match-time { font-size: 1.8rem; margin: 0.2rem 0; }
     .countdown-value { font-size: 1rem; }
