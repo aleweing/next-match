@@ -327,11 +327,14 @@ getApiMatch(match) {
     }
 
     getCountdown(dateStr, timeStr) {
-        const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
-        const now = new Date();
-        const diff = matchDateTime - now;
+    const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
+    const now = new Date();
+    const diff = matchDateTime - now;
 
-        const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
+    // Buscar el partido completo en filteredMatches para tener team1
+    const fullMatch = this.filteredMatches.find(m => m.date === dateStr && m.time === timeStr)
+                   || this.filteredMatches[this.currentMatchIndex];
+    const apiMatch = this.getApiMatch(fullMatch);
 
         if (apiMatch) {
             if (apiMatch.status === "FINISHED") {
