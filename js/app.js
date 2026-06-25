@@ -225,77 +225,17 @@ class NextMatchApp {
         }
     }
 
-    getApiMatch(match) {
-        if (!match || !match.team1 || match.team1 === "TBD") return undefined;
-        if (!this.apiMatches || this.apiMatches.length === 0) return undefined;
+getApiMatch(match) {
+    if (!match || !match.team1 || match.team1 === "TBD") return undefined;
+    if (!this.apiMatches || this.apiMatches.length === 0) return undefined;
 
-        const normalize = (str) => {
-            if (!str) return "";
-            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        };
-
-        const nameMap = {
-            "switzerland": "suiza",
-            "bosnia-herzegovina": "bosnia y herzegovina",
-            "morocco": "marruecos",
-            "scotland": "escocia",
-            "czechia": "republica checa",
-            "south africa": "sudafrica",
-            "ecuador": "ecuador",
-            "curacao": "curazao",
-            "curaçao": "curazao",
-            "tunisia": "tunez",
-            "japan": "japon",
-            "turkey": "turquia",
-            "paraguay": "paraguay",
-            "norway": "noruega",
-            "senegal": "senegal",
-            "uruguay": "uruguay",
-            "cape verde islands": "cabo verde",
-            "new zealand": "nueva zelanda",
-            "egypt": "egipto",
-            "panama": "panama",
-            "croatia": "croacia",
-            "colombia": "colombia",
-            "congo dr": "rd congo",
-            "jordan": "jordania",
-            "algeria": "argelia",
-            "mexico": "mexico",
-            "south korea": "republica de corea",
-            "canada": "canada",
-            "united states": "estados unidos",
-            "qatar": "catar",
-            "brazil": "brasil",
-            "haiti": "haiti",
-            "australia": "australia",
-            "netherlands": "paises bajos",
-            "germany": "alemania",
-            "ivory coast": "costa de marfil",
-            "sweden": "suecia",
-            "spain": "espana",
-            "saudi arabia": "arabia saudi",
-            "belgium": "belgica",
-            "iran": "ri de iran",
-            "argentina": "argentina",
-            "austria": "austria",
-            "france": "francia",
-            "iraq": "irak",
-            "portugal": "portugal",
-            "uzbekistan": "uzbekistan",
-            "england": "inglaterra",
-            "ghana": "ghana",
-        };
-
-        return this.apiMatches.find(m => {
-            if (!m.homeTeam || !m.homeTeam.name) return false;
-            const apiDate = m.utcDate.slice(0, 10);
-            const apiTime = m.utcDate.slice(11, 16);
-            if (apiDate !== match.date || apiTime !== match.time) return false;
-            const apiHome = normalize(m.homeTeam.name);
-            const mapped = nameMap[apiHome] || apiHome;
-            return mapped === normalize(match.team1);
-        });
-    }
+    return this.apiMatches.find(m => {
+        if (!m.utcDate) return false;
+        const apiDate = m.utcDate.slice(0, 10);
+        const apiTime = m.utcDate.slice(11, 16);
+        return apiDate === match.date && apiTime === match.time;
+    });
+}
 
     getFlag(flag, teamName) {
         const name = teamName ? teamName.toLowerCase() : "";
