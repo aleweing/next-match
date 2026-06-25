@@ -1,23 +1,112 @@
 // App principal para Next Match
+// Datos obtenidos directamente desde la API de football-data.org
 
 class NextMatchApp {
     constructor() {
         this.currentMatchIndex = 0;
-        this.filteredMatches = [...ALL_MATCHES];
+        this.allMatches = [];
+        this.filteredMatches = [];
         this.touchStartX = 0;
         this.touchStartY = 0;
         this.isDarkTheme = this.loadTheme();
         this.filterTeam = "";
-        this.apiMatches = [];
+        this._resizeTimer = null;
         this.init();
     }
 
-    init() {
+    async init() {
         this.setupEventListeners();
         this.applyTheme();
-        this.loadApiResults();
-        this.goToNextMatch();
-        this.updateTotalMatches();
+        await this.loadApiData();
+    }
+
+    async loadApiData() {
+        try {
+            const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
+            const data = await response.json();
+
+            if (data.errorCode === 429 || !data.matches) {
+                console.warn("Límite de API, reintentando en 15s...");
+                setTimeout(() => this.loadApiData(), 15000);
+                return;
+            }
+
+            // Construir allMatches directamente desde la API
+            this.allMatches = data.matches.map(m => ({
+                date: m.utcDate.slice(0, 10),
+                time: m.utcDate.slice(11, 16),
+                team1: this.translateName(m.homeTeam.name),
+                team2: this.translateName(m.awayTeam.name),
+                crest1: m.homeTeam.crest,
+                crest2: m.awayTeam.crest,
+                status: m.status,
+                home: m.score?.fullTime?.home,
+                away: m.score?.fullTime?.away,
+            })).sort((a, b) => {
+                return new Date(`${a.date}T${a.time}Z`) - new Date(`${b.date}T${b.time}Z`);
+            });
+
+            this.filteredMatches = [...this.allMatches];
+            this.updateTotalMatches();
+            this.goToNextMatch();
+
+        } catch (err) {
+            console.warn("No se pudieron cargar datos:", err);
+        }
+    }
+
+    translateName(name) {
+        const nameMap = {
+            "Mexico": "México",
+            "South Africa": "Sudáfrica",
+            "South Korea": "República de Corea",
+            "Czechia": "República Checa",
+            "Canada": "Canadá",
+            "Bosnia-Herzegovina": "Bosnia y Herzegovina",
+            "United States": "Estados Unidos",
+            "Paraguay": "Paraguay",
+            "Qatar": "Catar",
+            "Switzerland": "Suiza",
+            "Brazil": "Brasil",
+            "Morocco": "Marruecos",
+            "Haiti": "Haití",
+            "Scotland": "Escocia",
+            "Australia": "Australia",
+            "Turkey": "Turquía",
+            "Germany": "Alemania",
+            "Curaçao": "Curazao",
+            "Netherlands": "Países Bajos",
+            "Japan": "Japón",
+            "Ivory Coast": "Costa de Marfil",
+            "Ecuador": "Ecuador",
+            "Sweden": "Suecia",
+            "Tunisia": "Túnez",
+            "Spain": "España",
+            "Cape Verde Islands": "Cabo Verde",
+            "Belgium": "Bélgica",
+            "Egypt": "Egipto",
+            "Saudi Arabia": "Arabia Saudí",
+            "Uruguay": "Uruguay",
+            "Iran": "RI de Irán",
+            "New Zealand": "Nueva Zelanda",
+            "France": "Francia",
+            "Senegal": "Senegal",
+            "Iraq": "Irak",
+            "Argentina": "Argentina",
+            "Algeria": "Argelia",
+            "Austria": "Austria",
+            "Jordan": "Jordania",
+            "Portugal": "Portugal",
+            "Congo DR": "RD Congo",
+            "England": "Inglaterra",
+            "Croatia": "Croacia",
+            "Ghana": "Ghana",
+            "Panama": "Panamá",
+            "Uzbekistan": "Uzbekistán",
+            "Colombia": "Colombia",
+            "Norway": "Noruega",
+        };
+        return nameMap[name] || name;
     }
 
     setupEventListeners() {
@@ -111,9 +200,9 @@ class NextMatchApp {
 
     applyFilter() {
         if (!this.filterTeam) {
-            this.filteredMatches = [...ALL_MATCHES];
+            this.filteredMatches = [...this.allMatches];
         } else {
-            this.filteredMatches = ALL_MATCHES.filter(match =>
+            this.filteredMatches = this.allMatches.filter(match =>
                 match.team1.toLowerCase().includes(this.filterTeam) ||
                 match.team2.toLowerCase().includes(this.filterTeam)
             );
@@ -144,6 +233,7 @@ class NextMatchApp {
     goToNextMatch() {
         const now = new Date();
         const matchIndex = this.filteredMatches.findIndex(match => {
+            if (match.status === "FINISHED") return false;
             const matchDateTime = new Date(`${match.date}T${match.time}Z`);
             const matchEnd = new Date(matchDateTime.getTime() + 2.5 * 60 * 60 * 1000);
             return matchEnd > now;
@@ -207,51 +297,41 @@ class NextMatchApp {
         card.classList.add("bounce");
     }
 
-    async loadApiResults() {
-        try {
-            const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
-            const data = await response.json();
-
-            if (data.errorCode === 429 || !data.matches) {
-                console.warn("Límite de API, reintentando en 15s...");
-                setTimeout(() => this.loadApiResults(), 15000);
-                return;
-            }
-
-            this.apiMatches = data.matches;
-            this.updateDisplay();
-        } catch (err) {
-            console.warn("No se pudieron cargar resultados:", err);
+    getFlag(crest, teamName) {
+        if (crest) {
+            return `<img src="${crest}" class="flag-crest" alt="${teamName}" onerror="this.style.display='none'">`;
         }
+        return "";
     }
 
-getApiMatch(match) {
-    if (!match || !match.team1 || match.team1 === "TBD") return undefined;
-    if (!this.apiMatches || this.apiMatches.length === 0) return undefined;
+    getCountdown(match) {
+        const matchDateTime = new Date(`${match.date}T${match.time}Z`);
+        const now = new Date();
+        const diff = matchDateTime - now;
 
-    return this.apiMatches.find(m => {
-        if (!m.utcDate) return false;
-        const apiDate = m.utcDate.slice(0, 10);
-        const apiTime = m.utcDate.slice(11, 16);
-        return apiDate === match.date && apiTime === match.time;
-    });
-}
+        if (match.status === "FINISHED") {
+            return `Finalizado · ${match.home} - ${match.away}`;
+        }
+        if (match.status === "IN_PLAY" || match.status === "PAUSED") {
+            const home = match.home ?? 0;
+            const away = match.away ?? 0;
+            return `⚽ En juego · ${home} - ${away}`;
+        }
 
-    getFlag(flag, teamName) {
-        const name = teamName ? teamName.toLowerCase() : "";
-        if (name.includes("escocia") || name.includes("scotland")) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="#003399"/><line x1="0" y1="0" x2="60" y2="40" stroke="white" stroke-width="8"/><line x1="60" y1="0" x2="0" y2="40" stroke="white" stroke-width="8"/></svg>`;
+        if (diff <= 0) {
+            const elapsed = Math.abs(diff);
+            const twoHalfHours = 2.5 * 60 * 60 * 1000;
+            if (elapsed < twoHalfHours) return "⚽ Partido iniciado";
+            return "Partido finalizado";
         }
-        if (name.includes("gales") || name.includes("wales")) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="20" fill="white"/><rect y="20" width="60" height="20" fill="#CC0000"/><text x="30" y="28" text-anchor="middle" font-size="20">🐉</text></svg>`;
-        }
-        if (name.includes("irlanda del norte") || name.includes("northern ireland")) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="white"/><line x1="0" y1="0" x2="60" y2="40" stroke="#CC0000" stroke-width="5"/><line x1="60" y1="0" x2="0" y2="40" stroke="#CC0000" stroke-width="5"/><rect x="22" y="0" width="16" height="40" fill="#CC0000"/><rect x="0" y="12" width="60" height="16" fill="#CC0000"/></svg>`;
-        }
-        if (name.includes("inglaterra") || name.includes("england")) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" class="flag-svg"><rect width="60" height="40" fill="white"/><rect x="24" y="0" width="12" height="40" fill="#CC0000"/><rect x="0" y="14" width="60" height="12" fill="#CC0000"/></svg>`;
-        }
-        return `<span class="flag-emoji">${flag}</span>`;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        if (days > 0) return `En ${days}d ${hours}h`;
+        if (hours > 0) return `En ${hours}h ${minutes}m`;
+        return `En ${minutes}m`;
     }
 
     updateDisplay() {
@@ -262,10 +342,10 @@ getApiMatch(match) {
         if (!card) return;
 
         const localTime = this.convertToLocalTime(match.date, match.time);
-        const countdown = this.getCountdown(match.date, match.time);
+        const countdown = this.getCountdown(match);
         const isLandscape = window.innerWidth > window.innerHeight;
-        const flag1 = this.getFlag(match.flag1, match.team1);
-        const flag2 = this.getFlag(match.flag2, match.team2);
+        const flag1 = this.getFlag(match.crest1, match.team1);
+        const flag2 = this.getFlag(match.crest2, match.team2);
 
         if (isLandscape) {
             card.innerHTML = `
@@ -326,45 +406,6 @@ getApiMatch(match) {
         return utcDate.toLocaleDateString("es-ES", options);
     }
 
-    getCountdown(dateStr, timeStr) {
-    const matchDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
-    const now = new Date();
-    const diff = matchDateTime - now;
-
-    // Buscar el partido completo en filteredMatches para tener team1
-    const fullMatch = this.filteredMatches.find(m => m.date === dateStr && m.time === timeStr)
-                   || this.filteredMatches[this.currentMatchIndex];
-    const apiMatch = this.getApiMatch(fullMatch);
-
-        if (apiMatch) {
-            if (apiMatch.status === "FINISHED") {
-                const home = apiMatch.score.fullTime.home;
-                const away = apiMatch.score.fullTime.away;
-                return `Finalizado · ${home} - ${away}`;
-            }
-            if (apiMatch.status === "IN_PLAY" || apiMatch.status === "PAUSED") {
-                const home = apiMatch.score.fullTime.home ?? 0;
-                const away = apiMatch.score.fullTime.away ?? 0;
-                return `⚽ En juego · ${home} - ${away}`;
-            }
-        }
-
-        if (diff <= 0) {
-            const elapsed = Math.abs(diff);
-            const twoHalfHours = 2.5 * 60 * 60 * 1000;
-            if (elapsed < twoHalfHours) return "⚽ Partido iniciado";
-            return "Partido finalizado";
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        if (days > 0) return `En ${days}d ${hours}h`;
-        if (hours > 0) return `En ${hours}h ${minutes}m`;
-        return `En ${minutes}m`;
-    }
-
     updatePositionIndicator() {
         document.getElementById("currentPosition").textContent = this.currentMatchIndex + 1;
         document.getElementById("totalMatches").textContent = this.filteredMatches.length;
@@ -375,12 +416,12 @@ getApiMatch(match) {
     }
 
     startCountdownUpdates() {
-        setInterval(() => {
-            const hasLiveMatch = this.apiMatches.some(m =>
+        setInterval(async () => {
+            const hasLiveMatch = this.allMatches.some(m =>
                 m.status === "IN_PLAY" || m.status === "PAUSED"
             );
             if (hasLiveMatch) {
-                this.loadApiResults();
+                await this.loadApiData();
             } else {
                 this.updateDisplay();
             }
@@ -390,6 +431,6 @@ getApiMatch(match) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = new NextMatchApp();
-    window._app = app; // ← añadir esta línea
+    window._app = app;
     app.startCountdownUpdates();
 });
