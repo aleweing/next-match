@@ -224,6 +224,10 @@ async loadApiResults() {
         
         this.apiMatches = data.matches || [];
         console.log("apiMatches cargados:", this.apiMatches.length);
+        this.apiMatches = data.matches || [];
+console.log("apiMatches cargados:", this.apiMatches.length);
+console.log("partido actual:", this.filteredMatches[this.currentMatchIndex]?.team1);
+this.updateDisplay();
         this.updateDisplay();
     } catch (err) {
         console.error("Error detallado:", err); // ← cambiar warn por error
