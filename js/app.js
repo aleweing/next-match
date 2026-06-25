@@ -16,7 +16,7 @@ class NextMatchApp {
         this.setupEventListeners();
         this.applyTheme();
         this.loadApiResults();
-        this.goToNextMatch(); // ← punto 1: siempre inicia en el próximo partido
+        this.goToNextMatch();
         this.updateTotalMatches();
     }
 
@@ -60,7 +60,6 @@ class NextMatchApp {
             if (e.key === "ArrowLeft") this.nextMatch();
         });
 
-        // Punto 2: redibujar inmediatamente al rotar
         window.addEventListener("resize", () => {
             clearTimeout(this._resizeTimer);
             this._resizeTimer = setTimeout(() => this.updateDisplay(), 50);
@@ -208,108 +207,96 @@ class NextMatchApp {
         card.classList.add("bounce");
     }
 
-async loadApiResults() {
-    try {
-        console.log("Iniciando fetch..."); // ← añadir
-        const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
-        console.log("Response status:", response.status); // ← añadir
-        const data = await response.json();
-        console.log("Data keys:", Object.keys(data)); // ← añadir
-        
-        if (data.errorCode === 429 || !data.matches) {
-            console.warn("Límite de API:", data);
-            setTimeout(() => this.loadApiResults(), 15000);
-            return;
+    async loadApiResults() {
+        try {
+            const response = await fetch("https://test-api-futbol-8791.alewein.workers.dev/");
+            const data = await response.json();
+
+            if (data.errorCode === 429 || !data.matches) {
+                console.warn("Límite de API, reintentando en 15s...");
+                setTimeout(() => this.loadApiResults(), 15000);
+                return;
+            }
+
+            this.apiMatches = data.matches;
+            this.updateDisplay();
+        } catch (err) {
+            console.warn("No se pudieron cargar resultados:", err);
         }
-        
-        this.apiMatches = data.matches || [];
-        console.log("apiMatches cargados:", this.apiMatches.length);
-        this.apiMatches = data.matches || [];
-console.log("apiMatches cargados:", this.apiMatches.length);
-console.log("partido actual:", this.filteredMatches[this.currentMatchIndex]?.team1);
-this.updateDisplay();
-        this.updateDisplay();
-    } catch (err) {
-        console.error("Error detallado:", err); // ← cambiar warn por error
     }
-}
 
-getApiMatch(match) {
-    if (!match || !match.team1 || match.team1 === "TBD") return undefined;
+    getApiMatch(match) {
+        if (!match || !match.team1 || match.team1 === "TBD") return undefined;
+        if (!this.apiMatches || this.apiMatches.length === 0) return undefined;
 
-    const normalize = (str) => {
-        if (!str) return "";
-        return str
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .trim();
-    };
+        const normalize = (str) => {
+            if (!str) return "";
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        };
 
-    const nameMap = {
-        "switzerland": "suiza",
-        "bosnia-herzegovina": "bosnia y herzegovina",
-        "morocco": "marruecos",
-        "scotland": "escocia",
-        "czechia": "republica checa",
-        "south africa": "sudafrica",
-        "ecuador": "ecuador",
-        "curacao": "curazao",
-        "curaçao": "curazao",
-        "tunisia": "tunez",
-        "japan": "japon",
-        "turkey": "turquia",
-        "paraguay": "paraguay",
-        "norway": "noruega",
-        "senegal": "senegal",
-        "uruguay": "uruguay",
-        "cape verde islands": "cabo verde",
-        "new zealand": "nueva zelanda",
-        "egypt": "egipto",
-        "panama": "panama",
-        "croatia": "croacia",
-        "colombia": "colombia",
-        "congo dr": "rd congo",
-        "jordan": "jordania",
-        "algeria": "argelia",
-        "mexico": "mexico",
-        "south korea": "republica de corea",
-        "canada": "canada",
-        "united states": "estados unidos",
-        "qatar": "catar",
-        "brazil": "brasil",
-        "haiti": "haiti",
-        "australia": "australia",
-        "netherlands": "paises bajos",
-        "germany": "alemania",
-        "ivory coast": "costa de marfil",
-        "sweden": "suecia",
-        "spain": "espana",
-        "saudi arabia": "arabia saudi",
-        "belgium": "belgica",
-        "iran": "ri de iran",
-        "argentina": "argentina",
-        "austria": "austria",
-        "france": "francia",
-        "iraq": "irak",
-        "portugal": "portugal",
-        "uzbekistan": "uzbekistan",
-        "england": "inglaterra",
-        "ghana": "ghana",
-    };
+        const nameMap = {
+            "switzerland": "suiza",
+            "bosnia-herzegovina": "bosnia y herzegovina",
+            "morocco": "marruecos",
+            "scotland": "escocia",
+            "czechia": "republica checa",
+            "south africa": "sudafrica",
+            "ecuador": "ecuador",
+            "curacao": "curazao",
+            "curaçao": "curazao",
+            "tunisia": "tunez",
+            "japan": "japon",
+            "turkey": "turquia",
+            "paraguay": "paraguay",
+            "norway": "noruega",
+            "senegal": "senegal",
+            "uruguay": "uruguay",
+            "cape verde islands": "cabo verde",
+            "new zealand": "nueva zelanda",
+            "egypt": "egipto",
+            "panama": "panama",
+            "croatia": "croacia",
+            "colombia": "colombia",
+            "congo dr": "rd congo",
+            "jordan": "jordania",
+            "algeria": "argelia",
+            "mexico": "mexico",
+            "south korea": "republica de corea",
+            "canada": "canada",
+            "united states": "estados unidos",
+            "qatar": "catar",
+            "brazil": "brasil",
+            "haiti": "haiti",
+            "australia": "australia",
+            "netherlands": "paises bajos",
+            "germany": "alemania",
+            "ivory coast": "costa de marfil",
+            "sweden": "suecia",
+            "spain": "espana",
+            "saudi arabia": "arabia saudi",
+            "belgium": "belgica",
+            "iran": "ri de iran",
+            "argentina": "argentina",
+            "austria": "austria",
+            "france": "francia",
+            "iraq": "irak",
+            "portugal": "portugal",
+            "uzbekistan": "uzbekistan",
+            "england": "inglaterra",
+            "ghana": "ghana",
+        };
 
-    return this.apiMatches.find(m => {
-        if (!m.homeTeam || !m.homeTeam.name) return false;
-        const apiDate = m.utcDate.slice(0, 10);
-        const apiTime = m.utcDate.slice(11, 16);
-        if (apiDate !== match.date || apiTime !== match.time) return false;
+        return this.apiMatches.find(m => {
+            if (!m.homeTeam || !m.homeTeam.name) return false;
+            const apiDate = m.utcDate.slice(0, 10);
+            const apiTime = m.utcDate.slice(11, 16);
+            if (apiDate !== match.date || apiTime !== match.time) return false;
+            const apiHome = normalize(m.homeTeam.name);
+            const mapped = nameMap[apiHome] || apiHome;
+            return mapped === normalize(match.team1);
+        });
+    }
 
-        const apiHome = normalize(m.homeTeam.name);
-        const mapped = nameMap[apiHome] || apiHome;
-        return mapped === normalize(match.team1);
-    });
-}
-    // Punto 3: SVG inline para banderas británicas
     getFlag(flag, teamName) {
         const name = teamName ? teamName.toLowerCase() : "";
         if (name.includes("escocia") || name.includes("scotland")) {
@@ -332,15 +319,15 @@ getApiMatch(match) {
         if (!match) return;
 
         const card = document.getElementById("matchCard");
+        if (!card) return;
+
         const localTime = this.convertToLocalTime(match.date, match.time);
         const countdown = this.getCountdown(match.date, match.time);
         const isLandscape = window.innerWidth > window.innerHeight;
-
         const flag1 = this.getFlag(match.flag1, match.team1);
         const flag2 = this.getFlag(match.flag2, match.team2);
 
         if (isLandscape) {
-            // Punto 5: vista horizontal — equipos en fila, datos debajo
             card.innerHTML = `
                 <div class="landscape-teams">
                     <div class="team-section">
@@ -362,7 +349,6 @@ getApiMatch(match) {
                 </div>
             `;
         } else {
-            // Punto 4: vista vertical — equipo1, bandera1, vs, equipo2, bandera2, fecha, hora, countdown
             card.innerHTML = `
                 <div class="tournament-badge">Copa Mundial 2026</div>
                 <div class="team-section">
@@ -393,9 +379,8 @@ getApiMatch(match) {
         const localMinutes = String(utcDate.getMinutes()).padStart(2, "0");
         return `${localHours}:${localMinutes}`;
     }
-    
+
     formatLocalDate(dateStr, timeStr) {
-        // Usar la fecha local derivada del UTC, no el string de fecha directamente
         const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
         const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
         return utcDate.toLocaleDateString("es-ES", options);
@@ -408,9 +393,6 @@ getApiMatch(match) {
 
         const apiMatch = this.getApiMatch({ date: dateStr, time: timeStr });
 
-        // LOG TEMPORAL
-    if (diff < 0) console.log(`Buscando ${dateStr} ${timeStr} → encontrado:`, apiMatch?.homeTeam?.name, apiMatch?.status);
-        
         if (apiMatch) {
             if (apiMatch.status === "FINISHED") {
                 const home = apiMatch.score.fullTime.home;
