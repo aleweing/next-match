@@ -387,5 +387,6 @@ getApiMatch(match) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = new NextMatchApp();
+    window._app = app; // ← añadir esta línea
     app.startCountdownUpdates();
 });
