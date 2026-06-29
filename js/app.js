@@ -32,17 +32,17 @@ class NextMatchApp {
             }
 
             // Construir allMatches directamente desde la API
-            this.allMatches = data.matches.map(m => ({
-                date: m.utcDate.slice(0, 10),
-                time: m.utcDate.slice(11, 16),
-                team1: this.translateName(m.homeTeam.name),
-                team2: this.translateName(m.awayTeam.name),
-                crest1: m.homeTeam.crest,
-                crest2: m.awayTeam.crest,
-                status: m.status,
-                home: m.score?.fullTime?.home,
-                away: m.score?.fullTime?.away,
-            })).sort((a, b) => {
+        this.allMatches = data.matches.map(m => ({
+            date: m.utcDate.slice(0, 10),
+            time: m.utcDate.slice(11, 16),
+            team1: m.homeTeam?.name ? this.translateName(m.homeTeam.name) : "TBD",
+            team2: m.awayTeam?.name ? this.translateName(m.awayTeam.name) : "TBD",
+            crest1: m.homeTeam?.crest || null,
+            crest2: m.awayTeam?.crest || null,
+            status: m.status,
+            home: m.score?.fullTime?.home,
+            away: m.score?.fullTime?.away,
+        })).sort((a, b) => {
                 return new Date(`${a.date}T${a.time}Z`) - new Date(`${b.date}T${b.time}Z`);
             });
 
@@ -203,8 +203,8 @@ class NextMatchApp {
             this.filteredMatches = [...this.allMatches];
         } else {
             this.filteredMatches = this.allMatches.filter(match =>
-                match.team1.toLowerCase().includes(this.filterTeam) ||
-                match.team2.toLowerCase().includes(this.filterTeam)
+                (match.team1 || "").toLowerCase().includes(this.filterTeam) ||
+                (match.team2 || "").toLowerCase().includes(this.filterTeam)
             );
         }
         this.currentMatchIndex = 0;
